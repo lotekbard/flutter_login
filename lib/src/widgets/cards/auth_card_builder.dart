@@ -229,7 +229,7 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
   }
 
   Future<void> _forwardChangeRouteAnimation(GlobalKey cardKey) async {
-    if (!showAnimation) {
+    if (!widget.showAnimation) {
       widget.onSubmit?.call();
       return;
     }
