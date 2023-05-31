@@ -160,7 +160,7 @@ class __HeaderState extends State<_Header> {
     final renderParagraph = RenderParagraph(
       TextSpan(
         text: widget.title,
-        style: theme.textTheme.displaySmall!.copyWith(
+        style: theme.textTheme.headline3!.copyWith(
           fontSize: widget.loginTheme.beforeHeroFontSize,
         ),
       ),
@@ -225,14 +225,14 @@ class __HeaderState extends State<_Header> {
         tag: widget.titleTag,
         largeFontSize: widget.loginTheme.beforeHeroFontSize,
         smallFontSize: widget.loginTheme.afterHeroFontSize,
-        style: theme.textTheme.displaySmall,
+        style: theme.textTheme.headline3,
         viewState: ViewState.enlarged,
       );
     } else if (!DartHelper.isNullOrEmpty(widget.title)) {
       title = Text(
         widget.title!,
         key: kTitleKey,
-        style: theme.textTheme.displaySmall,
+        style: theme.textTheme.headline3,
       );
     } else {
       title = null;
@@ -278,7 +278,6 @@ class FlutterLogin extends StatefulWidget {
     this.messages,
     this.theme,
     this.userValidator,
-    this.validateUserImmediately,
     this.passwordValidator,
     this.onSubmitAnimationCompleted,
     this.logoTag,
@@ -296,7 +295,6 @@ class FlutterLogin extends StatefulWidget {
     this.termsOfService = const <TermOfService>[],
     this.onConfirmRecover,
     this.onConfirmSignup,
-    this.confirmSignupRequired,
     this.onResendCode,
     this.savedEmail = '',
     this.savedPassword = '',
@@ -306,6 +304,7 @@ class FlutterLogin extends StatefulWidget {
     this.confirmSignupKeyboardType,
     this.headerWidget,
     this.onSwitchToAdditionalFields,
+    this.showAnimation = true,
   })  : assert((logo is String?) || (logo is ImageProvider?)),
         logo = logo is String ? AssetImage(logo) : logo as ImageProvider?;
 
@@ -347,10 +346,6 @@ class FlutterLogin extends StatefulWidget {
   /// Email validating logic, Returns an error string to display if the input is
   /// invalid, or null otherwise
   final FormFieldValidator<String>? userValidator;
-
-  /// Should email be validated after losing focus [true] or after form
-  /// submissions [false]. Default: [false]
-  final bool? validateUserImmediately;
 
   /// Same as [userValidator] but for password
   final FormFieldValidator<String>? passwordValidator;
@@ -409,10 +404,6 @@ class FlutterLogin extends StatefulWidget {
   /// Optional
   final ConfirmSignupCallback? onConfirmSignup;
 
-  // Additional option to decide in runtime if confirmation is required
-  // Optional
-  final ConfirmSignupRequiredCallback? confirmSignupRequired;
-
   /// Sets [TextInputType] of sign up confirmation form.
   ///
   /// Defaults to [TextInputType.text].
@@ -447,6 +438,8 @@ class FlutterLogin extends StatefulWidget {
 
   /// A widget that can be placed on top of the loginCard.
   final Widget? headerWidget;
+
+  final bool showAnimation;
 
   static String? defaultEmailValidator(String? value) {
     if (value == null || value.isEmpty || !Regex.email.hasMatch(value)) {
@@ -620,35 +613,35 @@ class _FlutterLoginState extends State<FlutterLogin>
         ? primaryDarkShades[2]
         : primaryDarkShades.last;
     final accentColor = loginTheme.accentColor ?? theme.colorScheme.secondary;
-    final errorColor = loginTheme.errorColor ?? theme.colorScheme.error;
+    final errorColor = loginTheme.errorColor ?? theme.errorColor;
     // the background is a dark gradient, force to use white text if detect default black text color
-    final isDefaultBlackText = theme.textTheme.displaySmall!.color ==
-        Typography.blackMountainView.displaySmall!.color;
-    final titleStyle = theme.textTheme.displaySmall!
+    final isDefaultBlackText = theme.textTheme.headline3!.color ==
+        Typography.blackMountainView.headline3!.color;
+    final titleStyle = theme.textTheme.headline3!
         .copyWith(
           color: loginTheme.accentColor ??
               (isDefaultBlackText
                   ? Colors.white
-                  : theme.textTheme.displaySmall!.color),
+                  : theme.textTheme.headline3!.color),
           fontSize: loginTheme.beforeHeroFontSize,
           fontWeight: FontWeight.w300,
         )
         .merge(loginTheme.titleStyle);
-    final footerStyle = theme.textTheme.bodyLarge!
+    final footerStyle = theme.textTheme.bodyText1!
         .copyWith(
           color: loginTheme.accentColor ??
               (isDefaultBlackText
                   ? Colors.white
-                  : theme.textTheme.displaySmall!.color),
+                  : theme.textTheme.headline3!.color),
         )
         .merge(loginTheme.footerTextStyle);
-    final textStyle = theme.textTheme.bodyMedium!
+    final textStyle = theme.textTheme.bodyText2!
         .copyWith(color: blackOrWhite)
         .merge(loginTheme.bodyStyle);
-    final textFieldStyle = theme.textTheme.titleMedium!
+    final textFieldStyle = theme.textTheme.subtitle1!
         .copyWith(color: blackOrWhite, fontSize: 14)
         .merge(loginTheme.textFieldStyle);
-    final buttonStyle = theme.textTheme.labelLarge!
+    final buttonStyle = theme.textTheme.button!
         .copyWith(color: Colors.white)
         .merge(loginTheme.buttonStyle);
     final cardTheme = loginTheme.cardTheme;
@@ -669,6 +662,7 @@ class _FlutterLoginState extends State<FlutterLogin>
     return theme.copyWith(
       primaryColor: primaryColor,
       primaryColorDark: primaryColorDark,
+      errorColor: errorColor,
       cardTheme: theme.cardTheme.copyWith(
         clipBehavior: cardTheme.clipBehavior,
         color: cardTheme.color ?? theme.cardColor,
@@ -730,16 +724,14 @@ class _FlutterLoginState extends State<FlutterLogin>
       highlightColor:
           loginTheme.buttonTheme.highlightColor ?? theme.highlightColor,
       textTheme: theme.textTheme.copyWith(
-        displaySmall: titleStyle,
-        bodyMedium: textStyle,
-        titleMedium: textFieldStyle,
-        titleSmall: footerStyle,
-        labelLarge: buttonStyle,
+        headline3: titleStyle,
+        bodyText2: textStyle,
+        subtitle1: textFieldStyle,
+        subtitle2: footerStyle,
+        button: buttonStyle,
       ),
-      colorScheme: Theme.of(context)
-          .colorScheme
-          .copyWith(secondary: accentColor)
-          .copyWith(error: errorColor),
+      colorScheme:
+          Theme.of(context).colorScheme.copyWith(secondary: accentColor),
     );
   }
 
@@ -755,7 +747,6 @@ class _FlutterLoginState extends State<FlutterLogin>
     final headerHeight = cardTopPosition - headerMargin;
     final userValidator =
         widget.userValidator ?? FlutterLogin.defaultEmailValidator;
-    final validateUserImmediately = widget.validateUserImmediately ?? false;
     final passwordValidator =
         widget.passwordValidator ?? FlutterLogin.defaultPasswordValidator;
 
@@ -765,7 +756,7 @@ class _FlutterLoginState extends State<FlutterLogin>
         padding: EdgeInsets.only(bottom: loginTheme.footerBottomPadding),
         child: Text(
           widget.footer!,
-          style: theme.textTheme.titleSmall,
+          style: theme.textTheme.subtitle2,
           textAlign: TextAlign.center,
         ),
       );
@@ -790,7 +781,6 @@ class _FlutterLoginState extends State<FlutterLogin>
             confirmPassword: widget.savedPassword,
             onConfirmRecover: widget.onConfirmRecover,
             onConfirmSignup: widget.onConfirmSignup,
-            confirmSignupRequired: widget.confirmSignupRequired,
             beforeAdditionalFieldsCallback: widget.onSwitchToAdditionalFields,
             onResendCode: widget.onResendCode,
             termsOfService: widget.termsOfService,
@@ -821,7 +811,6 @@ class _FlutterLoginState extends State<FlutterLogin>
                         padding: EdgeInsets.only(top: cardTopPosition),
                         loadingController: _loadingController,
                         userValidator: userValidator,
-                        validateUserImmediately: validateUserImmediately,
                         passwordValidator: passwordValidator,
                         onSubmit: _reverseHeaderAnimation,
                         onSubmitCompleted: widget.onSubmitAnimationCompleted,
@@ -840,6 +829,7 @@ class _FlutterLoginState extends State<FlutterLogin>
                         confirmSignupKeyboardType:
                             widget.confirmSignupKeyboardType,
                         introWidget: widget.headerWidget,
+                        showAnimation: widget.showAnimation,
                       ),
                     ),
                     Positioned(
