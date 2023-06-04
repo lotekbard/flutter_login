@@ -209,7 +209,7 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
     setState(() {
       _pageController.animateToPage(
         newCardIndex,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 1500),
         curve: Curves.ease,
       );
       _pageIndex = newCardIndex;
