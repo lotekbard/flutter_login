@@ -255,6 +255,7 @@ class _AnimatedTextFormFieldState extends State<AnimatedTextFormField> {
               )
             : widget.suffixIcon,
       ),
+      errorMaxLines: 4,
     );
   }
 
