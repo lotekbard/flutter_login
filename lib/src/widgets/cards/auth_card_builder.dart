@@ -201,6 +201,10 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void showConfirmSignupCard() {
+    _changeCard(_confirmSignup);
+  }
+  
   void _changeCard(int newCardIndex) {
     final auth = Provider.of<Auth>(context, listen: false);
 
