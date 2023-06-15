@@ -466,10 +466,10 @@ class FlutterLogin extends StatefulWidget {
   }
 
   @override
-  State<FlutterLogin> createState() => _FlutterLoginState();
+  State<FlutterLogin> createState() => FlutterLoginState();
 }
 
-class _FlutterLoginState extends State<FlutterLogin>
+class FlutterLoginState extends State<FlutterLogin>
     with TickerProviderStateMixin {
   final GlobalKey<AuthCardState> authCardKey = GlobalKey();
 
